@@ -1,0 +1,19 @@
+{{extend 'layout.html'}}
+</br>
+</br>
+<div align="left">
+<button  onclick="document.location='{{=URL(r=request,f='editprojects')}}';">View and Edit my Projects</button>
+</div>
+</br>
+<div align="center">
+{{if auth.user.profile_pic!=None:}}
+<img height='120' width='170' src={{=URL('download',args=auth.user.profile_pic)}}>
+{{else:}}
+<img height='120' width='85' src={{=URL('static','images/defaultprofile.jpg')}}>
+{{pass}}
+</br>
+</br>
+{{=form1}}
+</br>
+</br>
+</div>

@@ -1,0 +1,72 @@
+{{extend 'layout.html'}}
+{{user=form[0].email}}
+{{if auth.user:}}
+{{if auth.user.email==user:}}
+<div style="float: left;">
+<form id='form' action={{=URL('editprofile')}}>
+<input type='submit' value='Edit your Profile' ></input>
+</form>
+</div>
+{{pass}}
+{{pass}}
+<style type="text/css">
+h2,h3 { display: inline; }
+</style>
+<div align="center">
+</br>
+</br>
+{{if form[0].profile_pic!=None:}}
+<img height='120' width='150' src={{=URL('download',args=form[0].profile_pic)}}>
+{{else:}}
+<img height='120' width='85' src={{=URL('static','images/defaultprofile.jpg')}}>
+{{pass}}
+
+</br>
+</br>
+<h1>{{=form[0].first_name}} {{=form[0].last_name}}</h1>
+Email:<h2> {{=form[0].email}}</h2>
+</br>
+Country:<h2> {{=form[0].country}}</h2>
+<br/>
+Part of ProjectLibrary from : <h2>[ {{=form[0].registration_date}} ]</h2>
+</br>
+</div>
+<br/>
+<br/>
+<h1>Projects Uploaded</h1>
+
+{{for some in project:}}
+{{some.project_name=some.project_name.upper()}}
+<h2>
+<br/>
+{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}
+</h2>---------------------------------------------------------------------------------------------------------------------------------------------------------------
+<br/>
+<button  onclick="document.location='{{=URL(r=request,f='change_project',args=some.id)}}';">Edit Project</button>
+<button  onclick="document.location='{{=URL(r=request,f='addfiles',args=some.id)}}';">Add Files</button>
+
+<!--
+<form id='form' action={{=URL('editproject',args=some.id)}}>
+<input type='submit' value='Edit this Project' ></input>
+</form>
+<form id='form' action={{=URL('viewfiles',args=some.id)}}>
+<input type='submit' value='Modify Content' ></input>
+</form>
+-->
+<br/>
+<br/>
+{{pass}}
+</br>
+</br>
+<h1>Project with my Collaboration:</h1>
+</br>
+{{for i in range(len(row)):}}
+{{this=db(db.project.project_name==row[i].project_name).select()}}
+<h2>{{=LI(A(row[i].project_name.upper(), _href=URL("project_page",args=this[0].id)))}}</h2>
+--------------------------------------------------------------------------------------------------------------------------------------------------<br/>
+<button  onclick="document.location='{{=URL(r=request,f='change_project',args=this[0].id)}}';">Edit Project</button>
+<button  onclick="document.location='{{=URL(r=request,f='addfiles',args=this[0].id)}}';">Add Files</button>
+</br>
+{{pass}}
+</br>
+</br>

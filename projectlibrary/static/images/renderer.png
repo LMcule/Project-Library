@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>Warning</title>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="icon" type="image/vnd.microsoft.icon" href="/favicon.ico" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta content="index, follow" name="robots" />
+	<meta content="10 days" name="revisit-after" />
+
+	<meta content="online photo effects, photo into sketch, photo into drawing, photo into cartoon, text effects, text generator, text maker, text creator, banner generator, logo generator, logo creator" name="keywords" />
+	<meta content="Online photo effects. Online text effects. Free computer graphics software." name="description" />
+	
+
+
+<script language="JavaScript">
+function mouse_over_button(who)
+{
+	who.style.borderColor = "#AA0000";
+	who.style.color = "#AA0000";
+}
+
+function mouse_out_button(who)
+{
+	who.style.borderColor = "#FFFFFF";
+	who.style.color = "#FFFFFF";
+}
+
+function redirect(url)
+{
+	window.location = url;
+}
+</script>
+
+<style>
+.back_button {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 20px;
+  float: right;
+  width: 110px;
+  margin: 5px;
+  padding: 1px;
+  /*font-weight: bold;*/
+  text-align: center;
+  font-size: 11px;
+  background-color: #FF8000;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div style="background-color: #000000; width: 425px; padding-top: 10px;">
+	<div style="font-family: Tahoma, Arial, sans-serif; font-size: 12px; font-weight: bold; color: #000000; width: 400px; height: 200px; background: url(/images/error_panel2.gif) no-repeat; margin: 10px; padding: 10px;">
+		<div style="padding-top: 20px; padding-right: 15px; margin: 30px; text-align: justify;">
+<p>Request method should be POST.</p>
+		    <!--
+			 <p>Picture to People server could not complete you request. Please try again so many times as you need to get it done. I keep writing and writing and writing to test this error window. I still didn't give up of test how much text this window can fit.</p>
+			-->
+		</div>
+	</div>
+	<div style="background-color: #000000; height: 50px; padding-right: 20px;">
+<div class="back_button" onclick="redirect('/');" onmouseover="mouse_over_button(this);" onmouseout="mouse_out_button(this);">Back</div>
+		<!--
+		<div class="back_button" onclick="redirect('http://localhost:8080/');" onmouseover="mouse_over_button(this);" onmouseout="mouse_out_button(this);">Back</div>
+		-->
+	</div>
+</div>
+
+</body>
+
+</html>

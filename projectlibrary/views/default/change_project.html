@@ -1,0 +1,21 @@
+{{extend 'layout.html'}}
+<div style="text-align: center">
+{{if project.project_pic!=None:}}
+<img height='150' width='150' src={{=URL('download',args=project.project_pic)}}>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+<h1>{{=project.project_name}}</h1>
+<h2>{{=project.projectadmin_email}}</h2>
+<br/>
+<br/>
+{{if auth.user.email==project.projectadmin_email:}}
+<button  onclick="document.location='{{=URL('delproject',args=project.id)}}';">Delete Project</button>
+<button  onclick="document.location='{{=URL(r=request,f='delcollo',args=project.id)}}';">Delete Collaborators</button>
+<button  onclick="document.location='{{=URL(r=request,f='addcollo',args=project.id)}}';">Add Collaborators</button>
+<button  onclick="document.location='{{=URL(r=request,f='addfiles',args=project.id)}}';">Add Files</button>
+{{pass}}
+<br/>
+<br/>
+</div>
+{{=form}}

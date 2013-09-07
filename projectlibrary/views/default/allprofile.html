@@ -1,0 +1,118 @@
+{{extend 'layout.html'}}
+{{user=form[0].email}}
+{{if auth.user:}}
+{{if auth.user.email==user:}}
+<button  onclick="document.location='{{=URL(r=request,f='editprojects')}}';">View and Edit my Projects</button>
+<div style="float: left;">
+<form id='form' action={{=URL('editprofile')}}>
+<input type='submit' value='Edit your Profile' ></input>
+</div>
+{{pass}}
+{{pass}}
+<div align="center">
+</br>
+</br>
+{{if form[0].profile_pic!=None:}}
+<img height='120' width='170' src={{=URL('download',args=form[0].profile_pic)}}>
+{{else:}}
+<img height='120' width='85' src={{=URL('static','images/defaultprofile.jpg')}}>
+{{pass}}
+<style type="text/css">
+h2 { display: inline; }
+</style>
+
+</br>
+</br>
+<h1>{{=form[0].first_name}} {{=form[0].last_name}}</h1>
+</br>
+{{if auth.user:}}
+{{if auth.user.email!=user:}}
+
+<form id='form' action={{=URL('sub',args=form[0].id)}}>
+<input type='submit' value='Subscribe to User' ></input>
+</form>
+{{pass}}
+{{pass}}
+</br>
+Email:<h2> {{=form[0].email}}</h2>
+<br/>
+Country:<h2> {{=form[0].country}}</h2>
+<br/>
+Part of ProjectLibrary from : <h2>[ {{=form[0].registration_date}} ]</h2>
+</br>
+</div>
+<br/>
+<br/>
+<h2>Projects Uploaded</h2>
+<br/>
+{{project=db(db.project.projectadmin_email==user).select()}}
+{{for some in project:}}
+{{some.project_name=some.project_name.upper()}}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}
+{{if some.project_pic!=None:}}
+<img height='150' width='150'  src={{=URL('download',args=some.project_pic)}}>
+<br/>
+<br/>
+<br/>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+<br/>
+<br/>
+<br/>
+{{pass}}
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+{{pass}}
+</br>
+</br>
+{{if auth.user:}}
+{{if auth.user.email==user:}}
+<h2>Projects with my Collaboration</h2> 
+{{for i in range(len(row)):}}
+<br/>
+{{this=db(db.project.project_name==row[i].project_name).select()}}
+<br/>
+{{=LI(A(row[i].project_name.upper(), _href=URL("project_page",args=this[0].id)))}}
+<br/>
+{{if this[0].project_pic!=None:}}
+<img height='150' width='150' src={{=URL('download',args=this[0].project_pic)}}>
+<br/>
+<br/>
+<br/>
+<br/>
+{{else:}}
+<br/>
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+<br/>
+<br/>
+<br/>
+{{pass}}
+<br/>
+<br/>
+{{pass}}
+<br/>
+<br/>
+{{pass}}
+<br/>
+<br/>
+<br/>
+{{else:}}
+<br/>
+<h2>Projects Collaborated In</h2> 
+<br/>
+{{for i in range(len(row1)):}}
+{{this=db(db.project.project_name==row1[i].project_name).select()}}
+{{=LI(A(row1[i].project_name.upper(), _href=URL("project_page",args=this[0].id)))}}
+{{if this[0].project_pic!=None:}}
+<img heigth='150' width='150' align="left" src={{=URL('download',args=this[0].project_pic)}}>
+<br/>
+{{else:}}
+<img height='150'align="left" width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+<br/>
+<br/>
+{{pass}}
+<br/>
+<br/>
+{{pass}}
+{{pass}}

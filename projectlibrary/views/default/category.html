@@ -1,0 +1,15 @@
+{{extend "layout.html"}}
+{{a=[]}}
+<h2><b>Categories</b></h2>
+<ul>
+{{for some in form:}}
+{{a.append(some.category)}}
+{{pass}}
+{{a=list(set(a))}}
+{{for some in a:}}
+<h3>
+{{=LI(A(some, _href=URL("listofprojects",args=some)))}}
+</h3>
+{{pass}}
+</ul>
+

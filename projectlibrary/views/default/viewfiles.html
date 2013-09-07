@@ -1,0 +1,124 @@
+{{extend 'layout.html'}}
+<div align="center">
+{{if project.project_pic!=None:}}
+<img heigth='150' width='150' src={{=URL('download',args=project.project_pic)}}>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+<style type="text/css">
+h3,h2 { display: inline; }
+
+</style>
+</br>
+<button  onclick="document.location='{{=URL(r=request,f='project_page',args=project.id)}}';">
+<h1>{{=project.project_name}}
+</h1>
+</button>
+<br/>
+<br/>
+<h3>Project Admin:</h3>
+{{user=db(db.auth_user.email==project.projectadmin_email).select().first()}}
+<button  onclick="document.location='{{=URL(r=request,f='allprofile',args=user.id)}}';">
+{{=project.projectadmin_email}}
+</button>
+<br/>
+<h3>Description: </h3>
+{{=project.description}}
+</br>
+</br>
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<div align="left">
+<form action={{=URL("addfiles",args=project.id)}}>
+<input type='submit' value='Add Files' ></input>
+</form>
+</div>
+{{pass}}
+{{pass}}
+</div>
+<!--
+<h2>Click on File to Download</h2>
+-->
+</br>
+</br>
+{{if len(ver3)!=0:}}
+<div align="center">
+<h2>Files in Version 3</h2>
+</div>
+<hr>
+</br>
+{{for some in ver3:}}
+<br/>
+{{=LI(A(some.file_name, _href=URL("download_func3",args=some.project_id)))}}
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<div style="float: right;">
+<button  onclick="document.location='{{=URL(r=request,f='delfile3',args=some.file_name)}}';">Delete File</button>
+</div>
+{{pass}}
+{{pass}}
+Description: <h3>{{=some.file_description}}</h3>
+<br/>
+<br/>
+{{pass}}
+</br>
+{{pass}}
+{{if len(ver2)!=0:}}
+</br>
+<div align="center">
+<h2>Files in Version 2</h2>
+</div>
+</br>
+{{for some in ver2:}}
+<br/>
+{{=LI(A(some.file_name, _href=URL("download_func2",args=some.project_id)))}} 
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<div style="float: right;">
+<button  onclick="document.location='{{=URL(r=request,f='delfile2',args=some.file_name)}}';">Delete File</button>
+</div>
+{{pass}}
+{{pass}}
+Description: <h3>{{=some.file_description}}</h3>
+<br/>
+<br/>
+{{pass}}
+</br>
+{{pass}}
+{{if len(ver1)!=0:}}
+</br>
+<div align="center">
+<h2>Files in Version 1</h2>
+</div>
+<hr>
+</br>
+{{for some in ver1:}}
+<br/>
+{{=LI(A(some.file_name, _href=URL("download_func1",args=some.project_id)))}} 
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<div style="float: right;">
+<button  onclick="document.location='{{=URL(r=request,f='delfile1',args=some.file_name)}}';">Delete File</button>
+</div>
+{{pass}}
+{{pass}}
+Description: <h3>{{=some.file_description}}</h3>
+<br/>
+<br/>
+{{pass}}
+</br>
+{{pass}}
+{{if len(ver2)==0 and len(ver3)==0 and len(ver1)==0:}}
+<div align="center">
+<blink><h1>No Files to Download!!!</h1></blink>
+<blink><h1>Project under Construction!!!</h1></blink>
+</div>
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<form action={{=URL("addfiles",args=project.id)}}>
+<input type='submit' value='Add Files' ></input>
+</form>
+{{pass}}
+{{pass}}
+{{pass}}
+

@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+{{max=0}}
+{{for some in form:}}
+{{if some.num_comments > max:}}
+{{high=some.id}}
+{{max=some.num_comments}}
+{{pass}}
+{{pass}}
+{{redirect(URL("project_page",args=high))}}

@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+<h2>Choose the Project you want to add files to:</h2>
+<style type="text/css">
+h3 { display: inline; }
+</style>
+</br>
+{{for i in range(len(row)):}}
+{{this=db(db.project.project_name==row[i].project_name).select()}}
+<h3>{{=LI(A(row[i].project_name.upper(), _href=URL("project_page",args=this[0].id)))}}</h3>
+<div align="right">
+<button class="btn btn-inverse" onclick="document.location='{{=URL(r=request,f='addfiles',args=this[0].id)}}';">Add files</button>
+</div>
+</br>
+{{pass}}
+</br>

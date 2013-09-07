@@ -1,0 +1,379 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.NameError'> global name 'ver1' is not defined"
+p3
+sS'layer'
+p4
+S'/home/kira/web2py/applications/projectlibrary/controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\n#########################################################################\n## This is a samples controller\n## - index is the default action of any application\n## - user is required for authentication and authorization\n## - download is for downloading files uploaded in the db (does streaming)\n## - call exposes all registered services (none by default)\n#########################################################################\n\n\ndef index():\n    form = db().select(db.project.ALL, orderby=~db.project.num_downloads)\n    \n    form1 = db().select(db.project.ALL, orderby=~db.project.date_added)\n    return dict(form=form,form1=form1)\n    """\n    example action using the internationalization operator T and flash\n    rendered by views/default/index.html or views/generic.html\n\n    if you need a simple wiki simple replace the two lines below with:\n    return auth.wiki()\n    """\n    response.flash = T("Welcome to Project Library")\n    return dict(message=T(\'Search - Download - Upload\'))\n\n\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n    return dict(form=auth())\n\n\ndef download():\n    """\n    allows downloading of uploaded files\n    http://..../[app]/default/download/[filename]\n    """\n    return response.download(request, db)\n\n\ndef call():\n    """\n    exposes services. for example:\n    http://..../[app]/default/call/jsonrpc\n    decorate with @services.jsonrpc the functions to expose\n    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n    """\n    return service()\n\n\n@auth.requires_signature()\ndef data():\n    """\n    http://..../[app]/default/data/tables\n    http://..../[app]/default/data/create/[table]\n    http://..../[app]/default/data/read/[table]/[id]\n    http://..../[app]/default/data/update/[table]/[id]\n    http://..../[app]/default/data/delete/[table]/[id]\n    http://..../[app]/default/data/select/[table]\n    http://..../[app]/default/data/search/[table]\n    but URLs must be signed, i.e. linked with\n      A(\'table\',_href=URL(\'data/tables\',user_signature=True))\n    or with the signed load operator\n      LOAD(\'default\',\'data.load\',args=\'tables\',ajax=True,user_signature=True)\n    """\n    return dict(form=crud())\n\ndef search_func():\n\tform = db().select(db.project.ALL, orderby=db.project.project_name)\n\tform1=db().select(db.auth_user.ALL)\n\tt= request.vars.s\n\treturn dict(t=t,form=form,form1=form1)\n\ndef register():\n\tform = crud.create(db.auth_user)\n\treturn dict(form=form)\n\n\t\n"""\ndef za():\n\tproject = db().select(db.project.ALL, orderby=db.project.project_name)\n\tlinks = [lambda row: A(\'Project Page\',_href=URL("default","project_page",args=[project.id]))]\n\tform1 =SQLFORM.grid(db.project.id>0, orderby="project.project_name DESC",links=links,links_in_grid=True, csv=False,deletable=False,editable=False,details=False)\n\treturn dict(form1=form1)\n\ndef az():\n\tproject = db().select(db.project.ALL, orderby=db.project.project_name)\n\tlinks = [lambda row: A(\'Project Page\',_href=URL("default","project_page",args=[project.id]))]\n\tform =SQLFORM.grid(db.project.id>0, links_in_grid=True, links=links ,orderby="project.project_name",csv=False,deletable=False,editable=False,details=False)\n\treturn dict(form=form)\n"""\n\n\ndef profile():\n\tredirect(URL(\'allprofile\',args=auth.user.id))\n\n\ndef editprofile():\n\tform = db(db.auth_user.id==auth.user.id).select()\n\trow=db(db.allowed_users.other_email==auth.user.email).select()\n\tdb.auth_user.email.writable=False\n\treturn dict(form1=auth.profile(),row=row,form=form)\n\ndef allprofile():\n\tform = db(db.auth_user.id==request.args(0,cast=int)).select()\n\trow1=db(db.allowed_users.other_email==form[0].email).select()\n\n\tif auth.user:\n\t\trow=db(db.allowed_users.other_email==auth.user.email).select()\n\t\treturn dict(form=form,row=row,row1=row1)\n\telse:\n\t\treturn dict(form=form,row1=row1)\n\ndef byuploads():\n\tform = db().select(db.auth_user.ALL, orderby=~db.auth_user.upload_count)\n\treturn dict(form = form)\n\ndef most_recent():\n\tform = db().select(db.project.ALL, orderby=~db.project.date_added)\n\treturn dict(form=form)\n\t\ndef bycomments():\n\tform = db().select(db.project.ALL, orderby=~db.project.num_comments)\n\treturn dict(form=form)\n\ndef bydownloads():\n\tform = db().select(db.project.ALL, orderby=~db.project.num_downloads)\n\treturn dict(form=form)\n\ndef byrating():\n\tform = db().select(db.project.ALL, orderby=~db.project.avg_rating)\n\treturn dict(form=form)\n\ndef az():\n\tform = db().select(db.project.ALL, orderby=db.project.project_name)\n\treturn dict(form=form)\ndef za():\n\tform1 = db().select(db.project.ALL, orderby=~db.project.project_name)\n\treturn dict(form1=form1)\ndef browse():\n\tform = db().select(db.project.ALL, orderby=db.project.project_name)\n\treturn dict(form=form)\n\n@auth.requires_login()\ndef uploadpage():\n\treturn dict()\n\ndef viewfiles():\n\t\n\tproject=db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tmain=db(db.files.project_id==project.id).select()\n\tver3=db((db.files.project_version==3) & (db.files.project_id==project.id)).select()\n\n\treturn dict(ver1=ver1,ver2=ver2,ver3=ver3,main=main,project=project)\n\n\n\ndef addfiles():\n\t\n\tform=SQLFORM(db.files)\n\tproject=db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tif form.process().accepted:\n\t\tsession.flash=\'Files Added\'\n\t\tmain2=db(db.files.file_name==request.vars.file_name).select().last()\n\t\tmain2.project_id=project.id\n\t\tmain=db(db.files.file_name==request.vars.file_name and db.files.project_id==project.id).select()\n\n\t\tmain2.project_version=len(main)+1\n\t\tmain2.update_record()\n\t\trow1=db(db.auth_user.email==auth.user.email).select()\n\t\trow1[0].upload_count = row1[0].upload_count + 1\n\t\trow1[0].update_record()\n\n\treturn dict(project=project,form=form)\n\n"""\t\ndef back():\n\tif request.env.http_referrer:\n\t    redirect(request.env.http_referrer)\n"""\ndef oldproject():\n\trow=db(db.allowed_users.other_email==auth.user.email).select()\n\t\t\n\treturn dict(row=row)\n\n\t\ndef newproject():\n\tform = SQLFORM(db.project)\n\n\n\tif form.process().accepted:\n\t\tsome=db(db.project.project_name==request.vars.project_name).select()\n\t\trow=db(db.project.project_name==request.vars.project_name).validate_and_update(projectadmin_email=auth.user.email)\n\t\trow1=db(db.auth_user.email==auth.user.email).select()\n\t\trow1[0].upload_count = row1[0].upload_count + 1\n\t\trow1[0].update_record()\n\t\tredirect(URL(\'project_page\',args=some[0].id))\n\treturn dict(form=form)\n\ndef category():\n\tform = db().select(db.project.ALL, orderby=db.project.project_name)\n\treturn dict(form=form)\n\ndef listofprojects():\n\tform =db(db.project.category==request.args(0,cast=str)).select()\n\treturn dict(form=form)\n\ndef most_uploaded():\n\tform = db().select(db.auth_user.ALL)\n\treturn dict(form=form)\n\n\ndef most_rated():\n\tform = db().select(db.project.ALL)\n\treturn dict(form=form)\n\ndef most_commented():\n\tform = db().select(db.project.ALL)\n\treturn dict(form=form)\n\ndef download_func():\n\tproject=db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tproject.num_downloads=project.num_downloads + 1\n\tproject.update_record()\n\tredirect(URL(\'download\',args=project.project_file))\n\ndef mostdownload():\n\tform=db().select(db.project.ALL)\n\treturn dict(form=form)\n"""\ndef clear():\n\tdb.project.truncate()\n\tdb.auth_user.truncate()\n\tdb.comments.truncate()\n\treturn dict()\n"""\n\n@auth.requires_login()\ndef delproject():\n\t\n\tproject = db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\n\tdb(db.allowed_users.project_name==project.project_name).delete()\n\tdb(request.args(0,cast=int)==db.project.id).delete()\n\tsession.flash = \'Project deleted\'\n\tredirect(URL(\'editprofile\',args=auth.user.id))\n\n@auth.requires_login()\ndef editproject():\n\tproject = db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\t\n\tform = SQLFORM.factory(\n\t\t\tField(\'description\',type=\'text\',default=project.description),\n#\tField(\'project_file\', \'upload\',default=project.project_file),\n\t\t\tField(\'projectadmin_email\',writable=False,readable=False,default=auth.user.email),\n\t\t\tField(\'project_pic\',type=\'upload\',default=\'\'),\n## add versions\n\t\t\tField(\'type_of_project\',requires=IS_IN_SET([\'Course\',\'Thesis\',\'Research Paper\',\'MSIT\',\'Other\']),default=project.type_of_project),\n\t\t\tField(\'category\',requires=IS_IN_SET([\'Audio & Video\',\'Business & Enterprise\',\'Communications\',\'Development\',\'Home & Education\',\'Games\',\'Graphics\',\'Science & Engineering\',\'Websites\',\'Others\']),default=project.category),\n\t\t\tField(\'project_admin_year\',requires=IS_IN_SET([\'BTECH\',\'MS\',\'MTECH\',\'PHD\']),default=project.project_admin_year)\n\t\t\n\t\t\t)\n\tif form.process().accepted:\n\t\tsession.flash=\'Project Details Updated\'\n\t\tdb(db.project.id==request.args(0,cast=int)).update(project_pic=form.vars.project_pic,description=form.vars.description,\n#\tproject_file=form.vars.project_file,\n\t\t\t\ttype_of_project=form.vars.type_of_project,category=form.vars.category,project_admin_year=form.vars.project_admin_year)\n\t\tredirect(URL(\'editproject\',args=project.id))\n\treturn dict(form=form,project=project)\n\ndef project_page():\n\tproject = db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tdb.comments.project_id.default = project.id\n\tform = SQLFORM(db.comments)\n\tcomments = db(db.comments.project_id==project.id).select()\n\treturn dict(project=project, comments=comments, form=form)\n\n@auth.requires_login()\ndef commentandrate():\n\tproject = db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tdb.comments.project_id.default = project.id\n\tform = SQLFORM(db.comments)\n\tform1= SQLFORM.factory(\n\t\tField(\'rating\',type=\'integer\',requires=IS_IN_SET([1,2,3,4,5])))\n\t\n\tif form.process().accepted:\n\t\trow=db(db.comments.comment_c==request.vars.comment_c).select().last()\n\t\trow.commenter_c=auth.user.email\n\t\trow.update_record()\n\t\tresponse.flash = \'your comment is posted\'\n\t\n\tif form1.process().accepted:\n\t\tresponse.flash = \'your rating has been added\'\n\t\tproject.num_rating = project.num_rating + 1\n\t\tproject.total_rating = int(project.total_rating) + int(request.vars.rating)\n\t\tproject.update_record()\n\t\n\tcomments = db(db.comments.project_id==project.id).select()\n\t\n\treturn dict(project=project, comments=comments, form=form,form1=form1)\n\ndef collo_error():\n\treturn dict()\n"""\ndef delete_collo():\n\tprint request.args(1)\n\treturn  dict()\n"""\ndef confirm_delcollo():\n\t\n\tuser = db.allowed_users(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\tproject=db(db.allowed_users.project_name==user.project_name).select()\n\tdb(request.args(0,cast=int)==db.allowed_users.id).delete()\n\tredirect(URL(\'project_page\',args=project[0].id))\n\t\ndef delcollo():\n\n\tproject = db.project(request.args(0,cast=int))\n\trow=db(db.allowed_users.project_name==project.project_name).select()\n\n\tif auth.user.email==project.projectadmin_email:\n\t\t\treturn dict(row=row,project=project)\n\telse:\n\t\t\tredirect(URL(\'collo_error\',args=project.id))\n\n\n@auth.requires_login()\ndef addcollo():\n\t\n\tproject = db.project(request.args(0,cast=int)) or redirect(URL(\'index\'))\n\t\n#\trow=db(project.project_name==db.allowed_users.project_name).select()\n\n\tform1 = SQLFORM.factory(\n\t\tField(\'add_collaborator\',type=\'string\',requires=IS_EMAIL())\n\t\t)\n \n\trow1=db(db.allowed_users.project_name==project.project_name).select()\n\t\n\tif form1.process().accepted:\n\t\tdb.allowed_users.insert(other_email=request.vars.add_collaborator)\n\t\trow=db(db.allowed_users.other_email==request.vars.add_collaborator).select().last()\n\t\trow.project_name=project.project_name\n\t\trow.projectadmin_email=auth.user.email\n\t\trow.update_record()\n\t\tredirect(URL(\'project_page\',args=project.id))\n\t\t\n\n\tif auth.user.email==project.projectadmin_email:\n\t\t\treturn dict(form1=form1,project=project,row1=row1)\n\telse:\n\t\t\tredirect(URL(\'collo_error\',args=project.id))\n\t\n\n\n\n\n\t\n"""def login():\n\tform=SQLFORM.factory(\n\t\t\tField(\'user\',type=\'string\',requires=IS_NOT_EMPTY()),\n\t\t\tField(\'password\',type=\'password\'),\n\t\t\tField(\'dateofbirth\',type=\'date\')\n\t)\n\tif form.process().accepted:\n\t\trow=db(db.register.Username==request.vars.user).select()\n\t\tif request.vars.password==row[0][\'Password\']:\n\t\t\tredirect(URL(\'upload\'))\n\t\telse:\n\t\t\tresponse.flash=\'Invalid username or password\'\n\telse:\n\t \tresponse.flash=\'Error\'\n\n\treturn dict(form=form)\n"""\n\nresponse._vars=response._caller(viewfiles)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.NameError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.NameError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.NameError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.NameError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.NameError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.NameError object>'
+p23
+sS'__reduce__'
+p24
+S'<built-in method __reduce__ of exceptions.NameError object>'
+p25
+sS'__str__'
+p26
+S"<method-wrapper '__str__' of exceptions.NameError object>"
+p27
+sS'__format__'
+p28
+S'<built-in method __format__ of exceptions.NameError object>'
+p29
+sS'__getattribute__'
+p30
+S"<method-wrapper '__getattribute__' of exceptions.NameError object>"
+p31
+sS'__class__'
+p32
+S"<type 'exceptions.NameError'>"
+p33
+sS'__unicode__'
+p34
+S'<built-in method __unicode__ of exceptions.NameError object>'
+p35
+sS'__delattr__'
+p36
+S"<method-wrapper '__delattr__' of exceptions.NameError object>"
+p37
+sS'__subclasshook__'
+p38
+S'<built-in method __subclasshook__ of type object>'
+p39
+sS'__repr__'
+p40
+S"<method-wrapper '__repr__' of exceptions.NameError object>"
+p41
+sS'args'
+p42
+S'("global name \'ver1\' is not defined",)'
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.NameError object>'
+p47
+sS'__doc__'
+p48
+S"'Name not found globally.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.NameError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"global name 'ver1' is not defined"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S's\x05V\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">ajax</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">application</td><td valign="top">:</td><td><div>projectlibrary</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">args</td><td valign="top">:</td><td><div><table><tr><td><div>7</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0xaf1af7e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cid</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">client</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">controller</td><td valign="top">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_admin</td><td valign="top">:</td><td><div>127.0.0.1-ac4e41b8-1be3-4184-9409-c35615f6498e<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_projectlibrary</td><td valign="top">:</td><td><div>127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_welcome</td><td valign="top">:</td><td><div>127.0.0.1-bb29dd5b-3c84-4a49-9d8f-37cea59b2041<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">env</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/kira/web2py/applications/admin/&#x27;, &#x27;/home/kira/web2py/applications/welcome/&#x27;, &#x27;/home/kira/web2py/applications/projectlibrary/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/kira/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x9c5de6c: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;kira-Ideapad-Z570&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/kira/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;import_models&#x27;: False, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;asd&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;minthreads&#x27;: None, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/kira/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_encoding</td><td valign="top">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_accept_language</td><td valign="top">:</td><td><div>en-us,en;q=0.5</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cache_control</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_connection</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_cookie</td><td valign="top">:</td><td><div>session_id_welcome=127.0.0.1-bb29dd5b-3c84-4a49-9d8f-37cea59b2041; session_id_admin=127.0.0.1-ac4e41b8-1be3-4184-9409-c35615f6498e; session_id_projectlibrary=127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_host</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_referer</td><td valign="top">:</td><td><div>http://127.0.0.1:8000/projectlibrary/default/project_page/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">http_user_agent</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:11.0) Gecko/20100101 Firefox/11.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>kira-Ideapad-Z570</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path_info</td><td valign="top">:</td><td><div>/projectlibrary/default/viewfiles/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">query_string</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_addr</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remote_port</td><td valign="top">:</td><td><div>39311</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_method</td><td valign="top">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">request_uri</td><td valign="top">:</td><td><div>/projectlibrary/default/viewfiles/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">script_name</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_name</td><td valign="top">:</td><td><div>kira-Ideapad-Z570</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_port</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_protocol</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">server_software</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_path</td><td valign="top">:</td><td><div>/home/kira/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>2</div></td></tr><tr><td><div>stable</div></td></tr><tr><td><div>datetime.datetime(2013, 3, 4, 3, 26, 21)</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb72a80d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x9beab9c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_input</td><td valign="top">:</td><td><div>&lt;socket._fileobject object at 0xaf173aec&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi_version</td><td valign="top">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">extension</td><td valign="top">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">folder</td><td valign="top">:</td><td><div>/home/kira/web2py/applications/projectlibrary/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">function</td><td valign="top">:</td><td><div>viewfiles</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">get_vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">global_settings</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">app_folders</td><td valign="top">:</td><td><div>set([&#x27;/home/kira/web2py/applications/admin/&#x27;, &#x27;/home/kira/web2py/applications/welcome/&#x27;, &#x27;/home/kira/web2py/applications/projectlibrary/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">applications_parent</td><td valign="top">:</td><td><div>/home/kira/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_args</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cmd_options</td><td valign="top">:</td><td><div>&lt;Values at 0x9c5de6c: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;kira-Ideapad-Z570&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/kira/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;import_models&#x27;: False, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;profiler_filename&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;asd&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;interfaces&#x27;: None, &#x27;minthreads&#x27;: None, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">db_sessions</td><td valign="top">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">debugging</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">gluon_parent</td><td valign="top">:</td><td><div>/home/kira/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_jython</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_pypy</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">local_hosts</td><td valign="top">:</td><td><div><table><tr><td><div>kira-Ideapad-Z570</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">web2py_version</td><td valign="top">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>2</div></td></tr><tr><td><div>stable</div></td></tr><tr><td><div>datetime.datetime(2013, 3, 4, 3, 26, 21)</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_https</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_local</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">is_restful</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">now</td><td valign="top">:</td><td><div>datetime.datetime(2013, 4, 14, 1, 30, 29, 647865)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">post_vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">raw_args</td><td valign="top">:</td><td><div>7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">raw_extension</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">url</td><td valign="top">:</td><td><div>/projectlibrary/default/viewfiles/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">utcnow</td><td valign="top">:</td><td><div>datetime.datetime(2013, 4, 13, 20, 0, 29, 647921)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">uuid</td><td valign="top">:</td><td><div>projectlibrary/127.0.0.1.2013-04-14.01-30-29.c1e8d83b-39ad-4077-a254-29aa83deacef</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">vars</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">environ</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT</td><td valign="top">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_ENCODING</td><td valign="top">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_ACCEPT_LANGUAGE</td><td valign="top">:</td><td><div>en-us,en;q=0.5</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CACHE_CONTROL</td><td valign="top">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_CONNECTION</td><td valign="top">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_COOKIE</td><td valign="top">:</td><td><div>session_id_welcome=127.0.0.1-bb29dd5b-3c84-4a49-9d8f-37cea59b2041; session_id_admin=127.0.0.1-ac4e41b8-1be3-4184-9409-c35615f6498e; session_id_projectlibrary=127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_HOST</td><td valign="top">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_REFERER</td><td valign="top">:</td><td><div>http://127.0.0.1:8000/projectlibrary/default/project_page/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">HTTP_USER_AGENT</td><td valign="top">:</td><td><div>Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:11.0) Gecko/20100101 Firefox/11.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">PATH_INFO</td><td valign="top">:</td><td><div>/projectlibrary/default/viewfiles/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">QUERY_STRING</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_ADDR</td><td valign="top">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REMOTE_PORT</td><td valign="top">:</td><td><div>39311</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_METHOD</td><td valign="top">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">REQUEST_URI</td><td valign="top">:</td><td><div>/projectlibrary/default/viewfiles/7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SCRIPT_NAME</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_NAME</td><td valign="top">:</td><td><div>kira-Ideapad-Z570</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PORT</td><td valign="top">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_PROTOCOL</td><td valign="top">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">SERVER_SOFTWARE</td><td valign="top">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.errors</td><td valign="top">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb72a80d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.file_wrapper</td><td valign="top">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x9beab9c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.input</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0xaf1af7e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multiprocess</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.multithread</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.run_once</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.url_scheme</td><td valign="top">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">wsgi.version</td><td valign="top">:</td><td><div>1</div></td></tr></table></div></td></tr></table></div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'/home/kira/web2py/gluon/restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, 'CLEANUP': <class 'gluon.validators.CLEANUP'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 0xaf205e30, file "/home.../projectlibrary/controllers/default.py", line 13>'
+p69
+ssS'lnum'
+p70
+I212
+sS'lines'
+p71
+(dp72
+I207
+S'    try:'
+p73
+sI208
+S'        if isinstance(code, types.CodeType):'
+p74
+sI209
+S'            ccode = code'
+p75
+sI210
+S'        else:'
+p76
+sI211
+S'            ccode = compile2(code, layer)'
+p77
+sI212
+S'        exec ccode in environment'
+p78
+sI213
+S'    except HTTP:'
+p79
+sI214
+S'        raise'
+p80
+sI215
+S'    except RestrictedError:'
+p81
+sI216
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p82
+ssS'call'
+p83
+S'(code=\'# -*- coding: utf-8 -*-\\n# this file is released ...\\n"""\\n\\nresponse._vars=response._caller(viewfiles)\\n\', environment={\'A\': <class \'gluon.html.A\'>, \'Auth\': <class \'gluon.tools.Auth\'>, \'B\': <class \'gluon.html.B\'>, \'BEAUTIFY\': <class \'gluon.html.BEAUTIFY\'>, \'BODY\': <class \'gluon.html.BODY\'>, \'BR\': <class \'gluon.html.BR\'>, \'BUTTON\': <class \'gluon.html.BUTTON\'>, \'CAT\': <class \'gluon.html.CAT\'>, \'CENTER\': <class \'gluon.html.CENTER\'>, \'CLEANUP\': <class \'gluon.validators.CLEANUP\'>, ...}, layer=\'/home/kira/web2py/applications/projectlibrary/controllers/default.py\')'
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'/home/kira/web2py/applications/projectlibrary/controllers/default.py'
+p88
+sg64
+(dp89
+sg70
+I390
+sg71
+(dp90
+I384
+S'\telse:'
+p91
+sI385
+S"\t \tresponse.flash='Error'"
+p92
+sI386
+S''
+sI387
+S'\treturn dict(form=form)'
+p93
+sI388
+S'"""'
+p94
+sI379
+S'\t\trow=db(db.register.Username==request.vars.user).select()'
+p95
+sI380
+S"\t\tif request.vars.password==row[0]['Password']:"
+p96
+sI381
+S"\t\t\tredirect(URL('upload'))"
+p97
+sI382
+S'\t\telse:'
+p98
+sI383
+S"\t\t\tresponse.flash='Invalid username or password'"
+p99
+ssg83
+S'()'
+p100
+sg85
+S'<module>'
+p101
+sa(dp102
+g62
+S'/home/kira/web2py/gluon/globals.py'
+p103
+sg64
+(dp104
+S'self'
+p105
+S'undefined'
+p106
+sS'f'
+S'<function viewfiles>'
+p107
+ssg70
+I193
+sg71
+(dp108
+I192
+S'        self._vars = None'
+p109
+sI193
+S'        self._caller = lambda f: f()'
+p110
+sI194
+S'        self._view_environment = None'
+p111
+sI195
+S'        self._custom_commit = None'
+p112
+sI196
+S'        self._custom_rollback = None'
+p113
+sI197
+S''
+sI188
+S'        self.menu = []             # used by the default view layout'
+p114
+sI189
+S'        self.files = []            # used by web2py_ajax.html'
+p115
+sI190
+S'        self.generic_patterns = []  # patterns to allow generic views'
+p116
+sI191
+S"        self.delimiters = ('{{', '}}')"
+p117
+ssg83
+S'(f=<function viewfiles>)'
+p118
+sg85
+S'<lambda>'
+p119
+sa(dp120
+g62
+S'/home/kira/web2py/applications/projectlibrary/controllers/default.py'
+p121
+sg64
+(dp122
+S'ver1'
+p123
+g106
+sS'ver3'
+p124
+S'<Rows (1)>'
+p125
+sS'ver2'
+p126
+g106
+sS'project'
+p127
+S"<Row {'category': 'Science & Engineering', 'proj...'date_added': None, 'id': 7, 'num_downloads': 0}>"
+p128
+sS'main'
+p129
+S'<Rows (3)>'
+p130
+sS'builtindict'
+p131
+S"<type 'dict'>"
+p132
+ssg70
+I167
+sg71
+(dp133
+I162
+S''
+sI163
+S"\tproject=db.project(request.args(0,cast=int)) or redirect(URL('index'))"
+p134
+sI164
+S'\tmain=db(db.files.project_id==project.id).select()'
+p135
+sI165
+S'\tver3=db((db.files.project_version==3) & (db.files.project_id==project.id)).select()'
+p136
+sI166
+S''
+sI167
+S'\treturn dict(ver1=ver1,ver2=ver2,ver3=ver3,main=main,project=project)'
+p137
+sI168
+S''
+sI169
+S''
+sI170
+S''
+sI171
+S'def addfiles():'
+p138
+ssg83
+S'()'
+p139
+sg85
+S'viewfiles'
+p140
+sasS'pyver'
+p141
+S'Python 2.7.3: /usr/bin/python (prefix: /usr)'
+p142
+sS'session'
+p143
+g57
+(S'sK\n\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">auth</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">expiration</td><td valign="top">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">hmac_key</td><td valign="top">:</td><td><div>5128685b-2948-48ce-a396-2119901c751f</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_visit</td><td valign="top">:</td><td><div>datetime.datetime(2013, 4, 14, 1, 30, 29, 647865)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">remember</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">country</td><td valign="top">:</td><td><div>india</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">email</td><td valign="top">:</td><td><div>jp@gmail.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">first_name</td><td valign="top">:</td><td><div>jaspreet</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">id</td><td valign="top">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_name</td><td valign="top">:</td><td><div>singh</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">profile_pic</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_date</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_id</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">registration_key</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">reset_password_key</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">upload_count</td><td valign="top">:</td><td><div>19</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">user_groups</td><td valign="top">:</td><td><div><table></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_orderby</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">last_query</td><td valign="top">:</td><td><div>db.files.id&gt;0</div></td></tr></table></div>'
+tRp144
+sS'etype'
+p145
+S"<type 'exceptions.NameError'>"
+p146
+sS'date'
+p147
+S'Sun Apr 14 01:30:29 2013'
+p148
+sS'response'
+p149
+g57
+(S'sb!\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top">body</td><td valign="top">:</td><td><div>&lt;cStringIO.StringO object at 0xae4b9d00&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">cookies</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">session_id_projectlibrary</td><td valign="top">:</td><td><div>127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431<table><tr><td style="font-weight:bold;vertical-align:top">comment</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">domain</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">expires</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">httponly</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">max-age</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">path</td><td valign="top">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">secure</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">version</td><td valign="top">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">delimiters</td><td valign="top">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">files</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">flash</td><td valign="top">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generic_patterns</td><td valign="top">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">google_analytics_id</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">headers</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">X-Powered-By</td><td valign="top">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">logo</td><td valign="top">:</td><td><div><a class="brand" href="http://www.web2py.com/"><b>web<span>2</span>py</b>&trade;&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">menu</td><td valign="top">:</td><td><div><table><tr><td><div><table><tr><td><div>Home</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Upload</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/uploadpage</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Browse</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/browse</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>A-Z</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/az</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Z-A</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/za</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>By Comments</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/bycomments</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Most commented&#x27;&gt;, False, &#x27;/projectlibrary/default/most_commented&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>By Rating</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/byrating</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>By Category</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/category</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>By Downloads</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/bydownloads</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Most Downloaded&#x27;&gt;, False, &#x27;/projectlibrary/default/mostdownload&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>By Uploads</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/byuploads</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Most Uploads&#x27;&gt;, False, &#x27;/projectlibrary/default/most_uploaded&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Most Recent</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/most_recent</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Most Downloaded</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/mostdownload</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Most Uploads</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/projectlibrary/default/most_uploaded</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">meta</td><td valign="top">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top">author</td><td valign="top">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">description</td><td valign="top">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">generator</td><td valign="top">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">keywords</td><td valign="top">:</td><td><div>web2py, python, framework</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">models_to_run</td><td valign="top">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/viewfiles/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">postprocessing</td><td valign="top">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_cookie_expires</td><td valign="top">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_data_name</td><td valign="top">:</td><td><div>session_data_projectlibrary</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_file</td><td valign="top">:</td><td><div>&lt;open file &#x27;/home/kira/web2py/applications/projectlibrary/sessions/127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431&#x27;, mode &#x27;rb+&#x27; at 0x9d20ee8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_filename</td><td valign="top">:</td><td><div>/home/kira/web2py/applications/projectlibrary/sessions/127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id</td><td valign="top">:</td><td><div>127.0.0.1-9a64b77d-183f-4344-9b02-738e7b5de431</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_id_name</td><td valign="top">:</td><td><div>session_id_projectlibrary</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_locked</td><td valign="top">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_new</td><td valign="top">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">session_storage_type</td><td valign="top">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">status</td><td valign="top">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">subtitle</td><td valign="top">:</td><td><div>customize me!</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">title</td><td valign="top">:</td><td><div>Projectlibrary</div></td></tr><tr><td style="font-weight:bold;vertical-align:top">view</td><td valign="top">:</td><td><div>default/viewfiles.html</div></td></tr></table></div>'
+tRp150
+sS'locals'
+p151
+(dp152
+S'project'
+p153
+S"<Row {'category': 'Science & Engineering', 'proj...'date_added': None, 'id': 7, 'num_downloads': 0}>"
+p154
+sS'ver3'
+p155
+S'<Rows (1)>'
+p156
+sS'main'
+p157
+S'<Rows (3)>'
+p158
+sssS'traceback'
+p159
+S'Traceback (most recent call last):\n  File "/home/kira/web2py/gluon/restricted.py", line 212, in restricted\n    exec ccode in environment\n  File "/home/kira/web2py/applications/projectlibrary/controllers/default.py", line 390, in <module>\n  File "/home/kira/web2py/gluon/globals.py", line 193, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/kira/web2py/applications/projectlibrary/controllers/default.py", line 167, in viewfiles\n    return dict(ver1=ver1,ver2=ver2,ver3=ver3,main=main,project=project)\nNameError: global name \'ver1\' is not defined\n'
+p160
+s.

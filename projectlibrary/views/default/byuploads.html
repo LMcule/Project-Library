@@ -1,0 +1,24 @@
+{{extend "layout.html"}}
+
+<h2><b>Users with most uploads</b></h2>
+<br/>
+<br/>
+<ul>
+{{for some in form:}}
+<h2>
+<li>
+{{if some.profile_pic!=None:}}
+<img height='120' width='170' src={{=URL('download',args=some.profile_pic)}}>
+{{else:}}
+<img height='120' width='85' src={{=URL('static','images/defaultprofile.jpg')}}>
+{{pass}}
+<br/>
+{{=A(some.email, _href=URL("allprofile",args=some.id))}} ({{=some.upload_count}} Uploads)
+<br/>
+<br/>
+<br/>
+</h2>
+</li>
+{{pass}}
+</ul>
+

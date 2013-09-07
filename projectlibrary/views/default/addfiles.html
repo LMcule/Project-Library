@@ -1,0 +1,23 @@
+{{extend 'layout.html'}}
+<div align="center">
+{{if project.project_pic!=None:}}
+<img heigth='150' width='150' src={{=URL('download',args=project.project_pic)}}>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+<br/>
+
+<button  onclick="document.location='{{=URL(r=request,f='project_page',args=project.id)}}';">
+<h1>{{=project.project_name}}
+</h1>
+</button>
+<br/>
+<br/>
+<h3>Project Admin:</h3>
+{{user=db(db.auth_user.email==project.projectadmin_email).select().first()}}
+<button  onclick="document.location='{{=URL(r=request,f='allprofile',args=user.id)}}';">
+{{=project.projectadmin_email}}
+</button>
+<br/>
+</div>
+{{=form}}

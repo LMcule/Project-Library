@@ -1,0 +1,11 @@
+{{extend "layout.html"}}
+<h1>{{=request.args(0,cast=str)}}</h1>
+<ul>
+{{for some in form:}}
+{{some.project_name=some.project_name.upper()}}
+<h3>
+{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}
+</h3>
+{{pass}}
+</ul>
+

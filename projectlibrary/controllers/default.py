@@ -1,0 +1,606 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a samples controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+## - call exposes all registered services (none by default)
+#########################################################################
+
+
+def index():
+    form = db().select(db.project.ALL, orderby=~db.project.num_downloads)
+    
+    form1 = db().select(db.project.ALL, orderby=~db.project.date_added)
+    return dict(form=form,form1=form1)
+    """
+    example action using the internationalization operator T and flash
+    rendered by views/default/index.html or views/generic.html
+
+    if you need a simple wiki simple replace the two lines below with:
+    return auth.wiki()
+    """
+    session.flash = T("Welcome to Project Library")
+    return dict(message=T('Search - Download - Upload'))
+
+
+def user():
+
+
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    """
+    return dict(form=auth())
+
+
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+
+
+@auth.requires_signature()
+def data():
+    """
+    http://..../[app]/default/data/tables
+    http://..../[app]/default/data/create/[table]
+    http://..../[app]/default/data/read/[table]/[id]
+    http://..../[app]/default/data/update/[table]/[id]
+    http://..../[app]/default/data/delete/[table]/[id]
+    http://..../[app]/default/data/select/[table]
+    http://..../[app]/default/data/search/[table]
+    but URLs must be signed, i.e. linked with
+      A('table',_href=URL('data/tables',user_signature=True))
+    or with the signed load operator
+      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+    """
+    return dict(form=crud())
+"""
+def ma():
+	
+		user=db(db.auth_user.id==request.args(0,cast=int)).select().first()
+			session.flash='Files Added'
+			mail.send(to='projectlibraryiiit@gmail.com',subject=request.vars.message_subject,message='Message to Staff : '+request.vars.message_to_staff+'\r\n''\r\n'+'Author Is : '+str(auth.user.email))
+			redirect(URL('allprofile',args=auth.user.id))
+	
+		return dict(user=user)
+"""
+def clearnoti():
+	form=db(db.flak.user_id==auth.user.id).select()
+	for some in form:
+		some.all_flag=False
+		some.comments_flag=False
+		some.rating_flag=False
+		some.download_flag=False
+		some.update_record()
+	redirect(URL('noti'))
+	
+
+
+def search_func():
+	form = db().select(db.project.ALL, orderby=db.project.project_name)
+	form1=db().select(db.auth_user.ALL)
+	form2=db().select(db.files.ALL)
+	t= request.vars.s
+	return dict(t=t,form=form,form1=form1,form2=form2)
+
+def register():
+	form = SQLFORM(db.auth_user)
+	if form.process().accepted:
+		mail.send(to=form.vars.email,subject='Welcome to Project Library',message='You can browse/download/upload Projects. Rate and Comment on other projects. Spread your Knowledge and gain as much from others.'+'\r\n'+'\r\n'+'Sender: projectlibraryiiit@gmail.com' +'\r\n'+'\r\n'+'Do not reply back to this email.Start uploading now (^_^) www.projectlibrary.com ')
+		session.flash='Successfully Registered -> Start Uploading Projects'
+		redirect(URL('uploadpage'))
+	return dict(form=form)
+
+@auth.requires_login()
+def viewsub():
+		user=db(db.subscribe.cur_user==auth.user.id).select()
+		return dict(user=user)
+
+@auth.requires_login()
+def delsub():
+	db((db.subscribe.cur_user==auth.user.id) & (db.subscribe.sub_user==request.args(0,cast=int))).delete()
+	redirect(URL('viewsub'))
+
+
+
+@auth.requires_login()
+def sub():
+	user=db(db.auth_user.id==request.args(0,cast=int)).select().first()
+	if auth.user.email!=user.email:
+		sad=db((db.subscribe.cur_user==auth.user.id) & (db.subscribe.sub_user==user.id)).select()
+		if len(sad)==0:
+			s="You are now subscribed to  "+str(user.email)
+			session.flash=s
+			db.subscribe.insert(cur_user=auth.user.id,sub_user=user.id,is_sub=1)
+		else:
+			s="You are already subscribed to  "+str(user.email)
+			session.flash=s
+	else:
+		s="You cannot subscribe to yourself"
+		session.flash=s
+	  	
+	redirect(URL('allprofile',args=user.id))
+	return dict()
+
+@auth.requires_login()
+def delkol():
+	db((db.kolect.cur_user==auth.user.id) & (db.kolect.project_id==request.args(0,cast=int))).delete()
+	redirect(URL('viewkol'))
+
+@auth.requires_login()
+def viewkol():
+		sad=db(db.kolect.cur_user==auth.user.id).select()
+		return dict(sad=sad)
+			
+
+@auth.requires_login()
+def addtokol():
+	project=db.project(request.args(0,cast=int)) or redirect(URL('index'))
+
+	sad=db((db.kolect.cur_user==auth.user.id) & (db.kolect.project_id==project.id)).select()
+	if len(sad)==0:
+		s=str(project.project_name) + ' is now added to your Collection' 
+		session.flash=s
+		db.kolect.insert(cur_user=auth.user.id,project_id=project.id,is_sub=1)
+	else:
+		s=str(project.project_name) + ' is already in your Collection' 
+		session.flash=s
+	redirect(URL('project_page',args=project.id))
+	return dict(project=project)
+
+
+def noti():
+	seen=db(db.flak.user_id==auth.user.id).select()
+	return dict(seen=seen)
+
+def profile():
+	redirect(URL('allprofile',args=auth.user.id))
+
+def editprojects():
+	form = db(db.auth_user.id==auth.user.id).select()
+	row=db(db.allowed_users.other_email==auth.user.email).select()
+	project=db(db.project.projectadmin_email==auth.user.email).select()
+	return dict(row=row,form=form,project=project)
+
+
+def editprofile():
+	form = db(db.auth_user.id==auth.user.id).select()
+	row=db(db.allowed_users.other_email==auth.user.email).select()
+	db.auth_user.email.writable=False
+	return dict(form1=auth.profile(),row=row,form=form)
+
+def allprofile():
+	form = db(db.auth_user.id==request.args(0,cast=int)).select()
+	row1=db(db.allowed_users.other_email==form[0].email).select()
+
+	if auth.user:
+		row=db(db.allowed_users.other_email==auth.user.email).select()
+		return dict(form=form,row=row,row1=row1)
+	else:
+		return dict(form=form,row1=row1)
+
+def byuploads():
+	form = db().select(db.auth_user.ALL, orderby=~db.auth_user.upload_count)
+	return dict(form = form)
+
+def most_recent():
+	form = db().select(db.project.ALL, orderby=~db.project.date_added)
+	return dict(form=form)
+	
+def bycomments():
+	form = db().select(db.project.ALL, orderby=~db.project.num_comments)
+	return dict(form=form)
+
+def bydownloads():
+	form = db().select(db.project.ALL, orderby=~db.project.num_downloads)
+	return dict(form=form)
+
+def byrating():
+	form = db().select(db.project.ALL, orderby=~db.project.avg_rating)
+	return dict(form=form)
+
+def az():
+	form = db().select(db.project.ALL, orderby=db.project.project_name)
+	return dict(form=form)
+def za():
+	form1 = db().select(db.project.ALL, orderby=~db.project.project_name)
+	return dict(form1=form1)
+def browse():
+	form = db().select(db.project.ALL, orderby=db.project.project_name)
+	return dict(form=form)
+
+@auth.requires_login()
+def uploadpage():
+	return dict()
+
+def viewfiles():
+	
+	project=db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	main=db(db.files.project_id==project.id).select()
+	ver1=db((db.files.project_version==1) & (db.files.project_id==project.id)).select()
+	ver2=db((db.files.project_version==2) & (db.files.project_id==project.id)).select()
+	ver3=db((db.files.project_version==3) & (db.files.project_id==project.id)).select()
+
+	return dict(ver1=ver1,ver2=ver2,ver3=ver3,main=main,project=project)
+
+def delfile3():
+	files=db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==1)).select().last()
+	db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==3)).delete()
+	session.flash="File Deleted"
+	redirect(URL('viewfiles',args=files.project_id))
+def delfile2():
+	files=db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==1)).select().last()
+	db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==2)).delete()
+	session.flash="File Deleted"
+	redirect(URL('viewfiles',args=files.project_id))
+def delfile1():
+	files=db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==1)).select().last()
+	db((db.files.file_name==request.args(0,cast=str)) & (db.files.project_version==1)).delete()
+	session.flash="File Deleted"
+	(T('Most Uploads'), False, URL('default','most_uploaded')),
+	redirect(URL('viewfiles',args=files.project_id))
+"""
+def zip():
+	project=db.project(request.args(0,cast=int))
+	import os
+	os.chdir("/home/kira/web2py/applications/projectlibrary/uploads")
+	
+#os.mkdir(str(project.id))
+	row=db(db.files.project_id==project.id).select()
+	for some in row:
+		os.system("tar"+" "+"-cZf"+" "+str(project.id)+".tar"+" "+some.project_file)
+	target='/home/kira/web2py/applications/projectlibrary/uploads'+str(project.id)
+	mainfile=str(project.id)+".tar"
+	redirect(URL('download',args=mainfile))
+
+#	os.system("tar −cZf 1.tar "+target)
+#		os.system("tar"+" "+"-cZf"+" "+str(project.id)+".tar"+" "+some.project_file)
+
+#	os.system("rm -rf"+" "+str(project.id))
+
+
+#home/kira/web2py	
+"""
+def addfiles():
+	
+	form=SQLFORM(db.files)
+	project=db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	if form.process().accepted:
+		session.flash='Files Added'
+		main2=db(db.files.file_name==request.vars.file_name).select().last()
+		main2.project_id=project.id
+		main=db((db.files.file_name==request.vars.file_name) & (db.files.project_id==project.id)).select()
+		v1=db((db.files.file_name==request.vars.file_name) & (db.files.project_id==project.id) &(db.files.project_version==1)).select()
+		v2=db((db.files.file_name==request.vars.file_name) & (db.files.project_id==project.id) &(db.files.project_version==2)).select()
+		v3=db((db.files.file_name==request.vars.file_name) & (db.files.project_id==project.id) &(db.files.project_version==3)).select()
+		
+		if len(main)==3:
+			v1[0].project_file=v2[0].project_file
+			v1[0].file_description=v2[0].file_description
+			v2[0].file_description=v3[0].file_description
+			v3[0].file_description=request.vars.file_description
+			v2[0].project_file=v3[0].project_file
+			v3[0].project_file=request.vars.project_file
+			v1[0].update_record()
+			v2[0].update_record()
+			v3[0].update_record()
+		elif len(main)==2:
+			if len(v1)==0:
+				db.files.insert(project_version=1,file_name=v2[0].file_name,project_file=v2[0].project_file,file_description=v2[0].file_description,project_id=project.id)
+				v2[0].file_description=v3[0].file_description
+				v2[0].project_file=v3[0].project_file
+				v2[0].update_record()
+				db((db.files.file_name==v3[0].file_name) & (db.files.project_id==project.id) &(db.files.project_version==3)).delete()
+				main2.project_version=len(main) + 1
+				main2.update_record()
+			elif len(v2)==0:
+				db.files.insert(project_version=2,file_name=v3[0].file_name,project_file=v3[0].project_file,file_description=v3[0].file_description,project_id=project.id)
+				db((db.files.file_name==v3[0].file_name) & (db.files.project_id==project.id) &(db.files.project_version==3)).delete()
+							
+				main2.project_version=len(main) + 1
+				main2.update_record()
+			elif len(v3)==0:
+				main2.project_version=len(main) + 1
+				main2.update_record()
+		elif len(main)==1:
+			if len(v1)==0 and len(v2)==0:
+				db.files.insert(project_version=1,file_name=v3[0].file_name,project_file=v3[0].project_file,file_description=v3[0].file_description,project_id=project.id)
+				db((db.files.file_name==v3[0].file_name) & (db.files.project_id==project.id) &(db.files.project_version==3)).delete()
+				main2.project_version=len(main) + 1
+				main2.update_record()
+			elif len(v1)==0 and len(v3)==0:
+				db.files.insert(project_version=1,file_name=v2[0].file_name,project_file=v2[0].project_file,file_description=v2[0].file_description,project_id=project.id)
+				db((db.files.file_name==v2[0].file_name) & (db.files.project_id==project.id) &(db.files.project_version==2)).delete()
+				main2.project_version=len(main) + 1
+				main2.update_record()
+				
+			elif len(v2)==0 and len(v3)==0:
+				main2.project_version=len(main) + 1
+				main2.update_record()
+				
+		else:
+			main2.project_version=len(main) + 1
+			main2.update_record()
+		row1=db(db.auth_user.email==auth.user.email).select()
+		row1[0].upload_count = row1[0].upload_count + 1
+		row1[0].update_record()
+		db(db.files.project_version==0).delete()
+		redirect(URL('viewfiles',args=project.id))
+	return dict(project=project,form=form)
+
+def oldproject():
+	row=db(db.allowed_users.other_email==auth.user.email).select()
+		
+	return dict(row=row)
+
+	
+def newproject():
+	form = SQLFORM(db.project)
+
+	if form.process().accepted:
+		some=db(db.project.project_name==request.vars.project_name).select()
+		row=db(db.project.project_name==request.vars.project_name).validate_and_update(projectadmin_email=auth.user.email)
+		row1=db(db.auth_user.email==auth.user.email).select()
+		row1[0].upload_count = row1[0].upload_count + 1
+		row1[0].update_record()
+		db.flak.insert(user_id=auth.user.id,project_id=db().select(db.project.id).last())
+		redirect(URL('project_page',args=some[0].id))
+	return dict(form=form)
+
+def category():
+	form = db().select(db.project.ALL, orderby=db.project.project_name)
+	return dict(form=form)
+
+def listofprojects():
+	form =db(db.project.category==request.args(0,cast=str)).select()
+	return dict(form=form)
+
+def most_uploaded():
+	form = db().select(db.auth_user.ALL)
+	return dict(form=form)
+
+
+def most_rated():
+	form = db().select(db.project.ALL)
+	return dict(form=form)
+
+def most_commented():
+	form = db().select(db.project.ALL)
+	return dict(form=form)
+
+def userprojects():
+	projects=db(db.project.projectadmin_email==auth.user.email).select()
+	return dict(projects=projects)
+def download_func3():
+	
+	main=db((db.files.project_id==request.args(0,cast=int)) & (db.files.project_version==3)).select()
+	
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	project.num_downloads=project.num_downloads + 1
+	project.update_record()
+	can=db(db.flak.project_id==project.id).select()
+	if len(can)!=0:
+	
+		can[0].download_flag=True
+		can[0].all_flag=True
+		can[0].update_record()
+
+	redirect(URL('download',args=main[0].project_file))
+def download_func2():
+	
+	main=db((db.files.project_id==request.args(0,cast=int)) & (db.files.project_version==2)).select()
+	
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	project.num_downloads=project.num_downloads + 1
+	project.update_record()
+	can=db(db.flak.project_id==project.id).select()
+	if len(can)!=0:
+		can[0].download_flag=True
+		can[0].all_flag=True
+		can[0].update_record()
+
+	redirect(URL('download',args=main[0].project_file))
+def download_func1():
+	
+	main=db((db.files.project_id==request.args(0,cast=int)) & (db.files.project_version==1)).select()
+	
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	project.num_downloads=project.num_downloads + 1
+	project.update_record()
+	can=db(db.flak.project_id==project.id).select()
+	if len(can)!=0:
+		can[0].download_flag=True
+		can[0].all_flag=True
+		can[0].update_record()
+
+	redirect(URL('download',args=main[0].project_file))
+
+
+def mostdownload():
+	form=db().select(db.project.ALL)
+	return dict(form=form)
+"""
+def clear():
+	db.project.truncate()
+	db.auth_user.truncate()
+	db.comments.truncate()
+	db.flak.truncate()
+	db.subscribe.truncate()
+	db.allowed_users.truncate()
+	db.files.truncate()
+	db.kolect.truncate()
+
+	return dict()
+"""
+
+@auth.requires_login()
+def delproject():
+	
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+
+	db(db.allowed_users.project_name==project.project_name).delete()
+	db(request.args(0,cast=int)==db.project.id).delete()
+	session.flash = 'Project deleted'
+	redirect(URL('editprojects'))
+
+
+@auth.requires_login()
+def change_project():
+	project = db.project(request.args(0,cast=int))
+	
+	form = SQLFORM.factory(
+			Field('description',type='text',default=project.description),
+			Field('projectadmin_email',writable=False,readable=False,default=auth.user.email),
+			Field('project_pic',type='upload',uploadfolder='uploads'),
+			Field('type_of_project',requires=IS_IN_SET(['Course','Thesis','Research Paper','MSIT','Other']),default=project.type_of_project),
+			Field('category',requires=IS_IN_SET(['Audio & Video','Business & Enterprise','Communications','Development','Home & Education','Games','Graphics','Science & Engineering','Websites','Others']),default=project.category),
+			Field('project_admin_year',requires=IS_IN_SET(['BTECH','MS','MTECH','PHD']),default=project.project_admin_year)
+		
+			)
+	if form.process().accepted:
+		session.flash='Project Details Updated'
+		db(db.project.id==request.args(0,cast=int)).update(project_pic=form.vars.project_pic,description=form.vars.description,type_of_project=form.vars.type_of_project,category=form.vars.category,project_admin_year=form.vars.project_admin_year)
+		redirect(URL('change_project',args=project.id))
+	return dict(form=form,project=project)
+
+def project_page():
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	db.comments.project_id.default = project.id
+	form = SQLFORM(db.comments)
+	comments = db(db.comments.project_id==project.id).select()
+	return dict(project=project, comments=comments, form=form)
+
+@auth.requires_login()
+def commentandrate():
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	db.comments.project_id.default = project.id
+	form = SQLFORM(db.comments)
+	form1= SQLFORM.factory(
+		Field('rating',type='integer',requires=IS_IN_SET([1,2,3,4,5])))
+	
+	if form.process().accepted:
+		row=db(db.comments.comment_c==request.vars.comment_c).select().last()
+		row.commenter_c=auth.user.email
+		row.update_record()
+		
+		can=db(db.flak.project_id==project.id).select()
+		if len(can)!=0:
+			can[0].comments_flag=True
+			can[0].all_flag=True
+			can[0].update_record()
+		response.flash = 'your comment is posted'
+	
+	if form1.process().accepted:
+		response.flash = 'your rating has been added'
+		project.num_rating = project.num_rating + 1
+		project.total_rating = int(project.total_rating) + int(request.vars.rating)
+		can=db(db.flak.project_id==project.id).select()
+		if len(can)!=0:
+			can[0].rating_flag=True
+			can[0].all_flag=True
+			can[0].update_record()
+		project.update_record()
+	
+	comments = db(db.comments.project_id==project.id).select()
+	
+	return dict(project=project, comments=comments, form=form,form1=form1)
+
+def collo_error():
+	return dict()
+
+def confirm_delcollo():
+	
+	user = db.allowed_users(request.args(0,cast=int)) or redirect(URL('index'))
+	project=db(db.allowed_users.project_name==user.project_name).select()
+	db(request.args(0,cast=int)==db.allowed_users.id).delete()
+	redirect(URL('project_page',args=project[0].id))
+
+
+
+def delcollo():
+
+	project = db.project(request.args(0,cast=int))
+	row=db(db.allowed_users.project_name==project.project_name).select()
+
+	if auth.user:
+		if auth.user.email==project.projectadmin_email:
+			return dict(row=row,project=project)
+	else:
+		redirect(URL('collo_error',args=project.id))
+
+
+@auth.requires_login()
+def addcollo():
+	
+	project = db.project(request.args(0,cast=int)) or redirect(URL('index'))
+	
+
+	form1 = SQLFORM.factory(
+		Field('add_collaborator',type='string',requires=IS_EMAIL())
+		)
+ 
+	row1=db(db.allowed_users.project_name==project.project_name).select()
+	
+	if form1.process().accepted:
+		db.allowed_users.insert(other_email=request.vars.add_collaborator)
+		row=db(db.allowed_users.other_email==request.vars.add_collaborator).select().last()
+		row.project_name=project.project_name
+		row.projectadmin_email=auth.user.email
+		row.update_record()
+		redirect(URL('project_page',args=project.id))
+		
+
+	if auth.user.email==project.projectadmin_email:
+			return dict(form1=form1,project=project,row1=row1)
+	else:
+			redirect(URL('collo_error',args=project.id))
+	
+
+
+
+
+	
+"""
+def login():
+	form=SQLFORM.factory(
+			Field('user',type='string',requires=IS_NOT_EMPTY()),
+			Field('password',type='password'),
+			Field('dateofbirth',type='date')
+	)
+	if form.process().accepted:
+		row=db(db.register.Username==request.vars.user).select()
+		if request.vars.password==row[0]['Password']:
+			redirect(URL('upload'))
+		else:
+			response.flash='Invalid username or password'
+	else:
+	 	response.flash='Error'
+
+	return dict(form=form)
+
+"""

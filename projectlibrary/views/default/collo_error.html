@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+<blink><h2>Sorry, you need to be the admin of the project to change its collaborators</h2></blink>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+<button class="btn btn-inverse" onclick="document.location='{{=URL(r=request,f='project_page',args=request.args(0,cast=int))}}';">Go back to Project</button>

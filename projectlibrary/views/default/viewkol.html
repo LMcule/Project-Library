@@ -1,0 +1,40 @@
+{{extend 'layout.html'}}
+{{count=0}}
+{{for some in sad:}}
+{{count=count+1}}
+{{if count==1:}}
+<div align="center">
+<h1>My Collection</h1>
+<br/>
+<br/>
+<button  onclick="document.location='{{=URL(r=request,f='browse')}}';">Browse more Projects</button>
+<br/>
+<br/>
+<br/>
+</div>
+{{pass}}
+{{project=db(db.project.id==some.project_id).select().first()}}
+{{if project.project_pic!=None:}}
+<img heigth='150' width='150' src={{=URL('download',args=project.project_pic)}}>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+{{=LI(A(project.project_name, _href=URL("project_page",args=project.id)))}}
+---------------------------------------------------------------------------------------------------------------------------------
+<button  onclick="document.location='{{=URL(r=request,f='delkol',args=project.id)}}';">Remove from Collection</button>
+
+
+<br/>
+<br/>
+<br/>
+{{pass}}
+{{if count==0:}}
+<div align="center">
+<h1>Collection Empty</h1>
+<br/>
+<br/>
+<br/>
+<br/>
+<button  onclick="document.location='{{=URL(r=request,f='browse')}}';">Browse Projects</button>
+</div>
+{{pass}}

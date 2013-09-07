@@ -1,0 +1,11 @@
+{{extend 'layout.html'}}
+{{high=1}}
+{{max=0}}
+{{for some in form:}}
+{{if some.num_downloads > max:}}
+{{max=some.num_downloads}}
+{{high=some.id}}
+{{pass}}
+{{pass}}
+{{redirect(URL("project_page",args=high))}}
+

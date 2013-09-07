@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Orange And Black
+Description: A two-column, fixed-width design for 1024x768 screen resolutions.
+Version    : 1.0
+Released   : 20090203
+
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+ <title>
+{{=response.title or request.application}}
+</title>
+  
+  {{response.files.append(URL(request.application,'static','plugin_layouts/layouts/OrangeandBlack/style.css'))}}
+  {{response.files.append(URL('static','plugin_layouts/superfish.js'))}}
+
+{{include 'web2py_ajax.html'}}
+  <style>
+ul.web2py-menu-vertical { width: 150px; position: relative; top:1em; left:1em;  z-index:30; border:0; margin:0; padding: 0; list-style: none; text-decoration: none;}
+ul.web2py-menu-vertical li { margin:0; padding:0; border:0; width: 150px; background: black; text-align:left;}
+ul.web2py-menu-vertical li a { margin:0; padding: 1px 3px 1px 3px; border:0; width: 144px; color: white; font-size:12px;}
+div.flash { position: fixed; float: right; padding: 10px; top: 10px; right: 300px; opacity: 5.00; margin: 10px 10px 10px 10px; text-align: center; clear: both; color: #fff; font-size: 11pt; text-align: center; vertical-align: middle; cursor: pointer; background: black; border: 2px solid #fff; -moz-border-radius: 5px; -webkit-border-radius: 5px; z-index: 2; }
+div.error { background-color: red; color: white; padding: 3px; }
+.auth_navbar { text-align:right; z-index:10000; color: white; position: absolute; top: 100px; right:30px; border:100; padding:20 }
+  </style>
+ </head>
+ <body>
+<!-- start header -->
+  {{try:}}{{=auth.navbar(referrer_actions=None,action=URL('default','user'))}}{{except:pass}}
+
+<style type="text/css">
+h2 { 
+display: inline;
+}
+h4 {text-align: center; font-size: 30px;
+display: inline;
+}
+</style>
+
+  <div id="header-wrapper">
+   <div id="header">
+    <div id="menu">
+     {{=MENU(response.menu,_class='web2py-menu')}}
+    <script>
+      jQuery(document).ready(function(){jQuery('ul.web2py-menu').superfish({delay:400});});
+    </script>
+    </div>
+    <!-- end #menu -->
+    <div id="search">
+    <form method="get" action={{=URL('search_func')}}>
+      <fieldset>
+       <input type="text" name="s" id="search-text" size="50" />
+       <input type="submit" id="search-submit" value="Search" />
+       </fieldset>
+     </form>
+    
+    </div>
+    <!-- end #search -->
+   </div>
+   <!-- end #header -->
+  </div>
+  <!-- end #header-wrapper -->
+  </br>
+  </br>
+  <div id="page">
+   <div id='logo' >
+{{if auth.user:}}
+<br/>  
+<br/>  
+<h4>[{{=(A("My Subscriptions", _href=URL("viewsub")))}} | 
+   {{=(A("My Projects", _href=URL("editprojects",args=auth.user.id)))}} | 
+   {{=(A("My Collections", _href=URL("viewkol",args=auth.user.id)))}} | 
+   {{=(A("My Notifications", _href=URL("noti",args=auth.user.id)))}}]</h4>
+{{pass}}
+{{if not auth.user:}}
+<h1>Project Library</h1>
+{{pass}}
+   </div>
+   <hr />
+   <!-- end #logo -->
+   <div id="content">
+    <div class="flash">{{=response.flash or ''}}</div>
+    {{include}}
+   </div>
+   <!-- end #content -->
+{{ton=db().select(db.project.ALL,orderby=~db.project.date_added)}}
+{{ton1=db().select(db.project.ALL,orderby=~db.project.num_downloads)}}
+{{ton2=db().select(db.project.ALL,orderby=~db.project.avg_rating)}}
+   <div id="sidebar">
+</br>
+</br>
+<a href="javascript:void(history.go(-1))">
+<img height='70' width='70' src={{=URL('static','images/back.jpeg')}}>
+</a>
+&nbsp;
+&nbsp;
+&nbsp;
+<a href="javascript:void(history.go(+1))">
+<img height='70' width='70' src={{=URL('static','images/forward.jpeg')}}>
+</a>
+</br>
+</br>
+      <h2>
+       Website Description
+      </h2>
+</br>
+</br>
+      <p>
+      ProjectLibrary is desgned for users to upload and share their projects with other users. "Knowledge is of two kinds. We know a subject ourselves, or we know where we can find information upon it.
+      </br>- <b>Samuel Johnson</b>
+      </p>
+</br>
+</br>
+<h2>Top Rated</h2>
+</br>
+</br>
+</br>
+{{c=0}}
+{{for some in ton2:}}
+</br>
+{{c=c+1}}
+{{if c < 11:}}
+<h3>{{=c}}</h3>
+</br>
+{{some.project_name=some.project_name.upper()}}
+<h3>{{=(A(some.project_name, _href=URL("project_page",args=some.id)))}} 
+</h3>
+{{if some.num_rating != 0:}}
+</br>
+{{for i in range(int(some.avg_rating)):}}
+<img height='15' width='15' src="{{=URL('static','images/goldstar.jpg')}}"/>
+{{pass}}
+({{=some.num_rating}} Ratings)
+{{else:}}
+(0 Ratings)
+{{pass}}
+<br/>
+{{if some.project_pic!=None:}}
+<img height='50' width='50' src={{=URL('download',args=some.project_pic)}}>
+{{else:}}
+<img height='50' width='50' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+</br>
+{{else:}}
+{{break}}
+{{pass}}
+</br>
+</br>
+</br>
+{{pass}}
+<br/>
+</br>
+</br>
+<h2>Top 10 Downloads</h2>
+</br>
+</br>
+{{c=0}}
+{{for some in ton1:}}
+</br>
+{{c=c+1}}
+{{if c < 11:}}
+<h3>{{=c}}</h3>
+</br>
+{{some.project_name=some.project_name.upper()}}
+<h3>{{=(A(some.project_name, _href=URL("project_page",args=some.id)))}} 
+</h3>({{=some.num_downloads}} Downloads)
+</br>
+{{if some.project_pic!=None:}}
+<img height='50' width='50' src={{=URL('download',args=some.project_pic)}}>
+{{else:}}
+<img height='50' width='50' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+</br>
+{{else:}}
+{{break}}
+{{pass}}
+</br>
+</br>
+</br>
+{{pass}}
+</br>
+<h2>10 Most Recent</h2>
+</br>
+{{c=0}}
+{{for some in ton:}}
+</br>
+{{c=c+1}}
+{{if c < 11:}}
+<h3>{{=c}}</h3>
+{{some.project_name=some.project_name.upper()}}
+<h3>{{=(A(some.project_name, _href=URL("project_page",args=some.id)))}} 
+</h3>
+</br>
+[ {{=some.date_added}} ]
+</br>
+{{if some.project_pic!=None:}}
+<img height='50' width='50' src={{=URL('download',args=some.project_pic)}}>
+{{else:}}
+<img height='50' width='50' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+</br>
+{{else:}}
+{{break}}
+{{pass}}
+</br>
+</br>
+</br>
+{{pass}}
+<br/>
+</br>
+    <ul>
+</br>
+    <ul>
+     <li>
+     </li> 
+    </ul>
+   </div>
+   <!-- end #sidebar -->
+
+   <div style="clear: both;">
+    &nbsp;
+   </div>
+
+  </div>
+  <!-- end #page -->
+  <div id="footer">
+   <p>
+    Copyright (c) 2013 ProjectLibrary.com. All rights reserved. Design by
+    Jaspreet Singh &amp; Shikher Somal
+   </p>
+  </div>
+  <!-- end #footer -->
+ </body>
+</html>

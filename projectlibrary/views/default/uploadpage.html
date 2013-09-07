@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h2 style="text-align: center;">Choose from the following:</h2>
+<br/>
+<div style="text-align: center" >
+<button class="btn btn-inverse" onclick="document.location='{{=URL(r=request,f='newproject')}}';">Start a New Project</button>
+<br/>
+<br/>
+<button class="btn btn-inverse" onclick="document.location='{{=URL(r=request,f='oldproject')}}';">Modify Project as a Collaborator</button>
+<br/>
+<br/>
+<button class="btn btn-inverse" onclick="document.location='{{=URL(r=request,f='userprojects')}}';">Add Files to Old Projects</button>
+<br/>
+</div>

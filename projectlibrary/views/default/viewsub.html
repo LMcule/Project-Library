@@ -1,0 +1,44 @@
+{{extend 'layout.html'}}
+{{count=0}}
+{{for some in user:}}
+{{count=count+1}}
+{{if count==1:}}
+<div align="center">
+<h1>My Subscriptions</h1>
+<br/>
+<br/>
+<button  onclick="document.location='{{=URL(r=request,f='byuploads')}}';">Browse more Users</button>
+<br/>
+<br/>
+<br/>
+</div>
+{{pass}}
+{{man=db(db.auth_user.id==some.sub_user).select().first()}}
+---------------------------------------------------------------------------------------------------------------------------------
+<button  onclick="document.location='{{=URL(r=request,f='delsub',args=man.id)}}';">Remove Subscription</button>
+
+<!--
+<form id='form' action={{=URL('delsub',args=man.id)}}>
+<input type='submit' value='Remove Subscription' ></input>
+-->
+
+<br/>
+{{if man.profile_pic!=None:}}
+<img height='60' width='85' src={{=URL('download',args=man.profile_pic)}}>
+{{else:}}
+<img height='60' width='40' src={{=URL('static','images/defaultprofile.jpg')}}>
+{{pass}}
+{{=LI(A(man.email, _href=URL("allprofile",args=man.id)))}}
+<br/>
+<br/>
+{{pass}}
+{{if count==0:}}
+<div align="center">
+<h1>No Current Subscriptions</h1>
+<br/>
+<br/>
+<br/>
+<br/>
+<button  onclick="document.location='{{=URL(r=request,f='byuploads')}}';">Browse Users</button>
+</div>
+{{pass}}

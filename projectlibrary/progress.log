@@ -1,0 +1,14 @@
+[2013-03-24 16:12:13] START
+[2013-03-24 19:29:19] CREATE default/extended_login_form.html_: 0
+[2013-03-24 19:29:52] EDIT projectlibrary/views/default/extended_login_form.html_: 2
+[2013-03-24 19:29:57] EDIT projectlibrary/views/default/extended_login_form.html_: 0
+[2013-03-24 19:29:58] EDIT projectlibrary/views/default/extended_login_form.html_: 0
+[2013-03-24 19:30:46] EDIT projectlibrary/controllers/default.py: 76
+[2013-03-24 19:30:58] DELETE projectlibrary/controllers/extended_login_form.py: -80
+[2013-03-24 19:33:36] EDIT projectlibrary/controllers/default.py: -76
+[2013-03-28 18:10:58] DELETE projectlibrary/views/plugin_layouts/layouts/KeepitSimple.html: -55
+[2013-03-28 18:12:09] DELETE projectlibrary/static/plugin_layouts/superfish.css: -134
+[2013-03-28 18:12:13] DELETE projectlibrary/static/plugin_layouts/superfish.js: -112
+[2013-03-28 18:12:27] DELETE projectlibrary/static/plugin_layouts/layouts/KeepitSimple/index.html: -32
+[2013-03-28 18:12:32] DELETE projectlibrary/static/plugin_layouts/layouts/KeepitSimple/preview.png: -62
+[2013-04-03 15:57:27] EDIT projectlibrary/views/default/upload.html: 0

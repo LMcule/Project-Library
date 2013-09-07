@@ -1,0 +1,23 @@
+{{extend 'layout.html'}}
+<div align="center">
+<button  onclick="document.location='{{=URL(r=request,f='project_page',args=project.id)}}';">
+<h1>{{=project.project_name}}
+</h1>
+</button>
+<br/>
+<br/>
+<h3>Project Admin:</h3>
+{{user=db(db.auth_user.email==project.projectadmin_email).select().first()}}
+<button  onclick="document.location='{{=URL(r=request,f='allprofile',args=user.id)}}';">
+{{=project.projectadmin_email}}
+</button>
+<br/>
+<style type="text/css">
+h3,h2 { display: inline; }
+</style>
+<h3>Description: </h3>
+{{=project.description}}
+</div>
+</br>
+<img height='80' width='80' src="{{=URL('static','images/collo.jpeg')}}"/>
+{{=form1}}

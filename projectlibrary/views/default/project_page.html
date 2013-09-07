@@ -1,0 +1,106 @@
+{{extend 'layout.html'}}
+<br/>
+<br/>
+{{if auth.user:}}
+{{if auth.user.email==project.projectadmin_email:}}
+<button  onclick="document.location='{{=URL(r=request,f='change_project',args=project.id)}}';">Edit Project</button>
+{{pass}}
+{{pass}}
+<br/>
+<!--<button  onclick="document.location='{{=URL(r=request,f='zip',args=project.id)}}';">ZIP</button>
+-->
+<div style="float: right;">
+</br>
+</br>
+</br>
+<h2>Total no. of Downloads : {{=project.num_downloads}}</h2>
+</br>
+</br>
+<h2>Total no. of Comments : {{=project.num_comments}}</h2>
+</br>
+</br>
+<h2>Rating for this Project :
+{{if project.num_rating != 0:}}
+{{for i in range(int(project.avg_rating)):}}
+<img height='20' width='20' src="{{=URL('static','images/goldstar.jpg')}}"/>
+{{pass}}
+({{=project.num_rating}} Ratings)
+{{else:}}
+0
+{{pass}}</h2> 
+</br>
+<style type="text/css">
+h3,h2 { display: inline; }
+</style>
+</br>
+</br>
+<button  onclick="document.location='{{=URL(r=request,f='addtokol',args=project.id)}}';">Add to Collection</button>
+<button  onclick="document.location='{{=URL(r=request,f='viewfiles',args=project.id)}}';">View Files</button>
+<button  onclick="document.location='{{=URL(r=request,f='addcollo',args=project.id)}}';">Add Collaborators</button>
+<button  onclick="document.location='{{=URL(r=request,f='delcollo',args=project.id)}}';">Delete Collaborators</button>
+
+</div>
+<br/>
+<div align="left">
+{{if project.project_pic!=None:}}
+<img heigth='150' width='150' src={{=URL('download',args=project.project_pic)}}>
+{{else:}}
+<img height='150' width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+</br>
+</br>
+<button  onclick="document.location='{{=URL(r=request,f='project_page',args=project.id)}}';">
+<h1>{{=project.project_name}}
+</h1>
+</button>
+</br>
+</br>
+<h3>Project Admin:</h3>
+{{user=db(db.auth_user.email==project.projectadmin_email).select().first()}}
+<button  onclick="document.location='{{=URL(r=request,f='allprofile',args=user.id)}}';">
+{{=project.projectadmin_email}}
+</button>
+<br/>
+</br>
+<h3>Description: </h3>
+{{=project.description}}
+</div>
+{{project1=db(db.allowed_users.project_name==project.project_name).select()}}
+</br>
+<h3>Collaborators:</h3>
+{{for i in range(len(project1)):}}
+{{=project1[i].other_email}}
+{{if i != len(project1)-1:}}
+,
+{{pass}}
+{{pass}}
+
+{{project.num_comments=len(comments)}}
+{{if project.num_rating != 0:}}
+{{project.avg_rating=round(float(project.total_rating)/float(project.num_rating),1)}} 
+{{pass}}
+{{project.update_record()}}
+<br/>
+<br/>
+
+<br/>
+<br/>
+<h1>Comments</h1>
+{{for i in range(len(comments)):}}
+<br/>
+<br/>
+<h2>
+{{=comments[i]['comment_c']}}
+</h2>
+</br>
+Posted BY - - 
+{{=comments[i]['commenter_c']}}
+{{pass}}
+</br>
+</br>
+</br>
+<form action={{=URL("commentandrate",args=project.id)}}>
+<input type='submit' value='Comment and Rate' ></input>
+</form>
+</br>
+</br>

@@ -1,0 +1,86 @@
+{{extend 'layout.html'}}
+</br>
+<style type="text/css">
+h3 { display: inline; }
+</style>
+{{count=0}}
+{{for some in form:}}
+{{if str(some.project_name).startswith(t):}}
+{{if count==0:}}
+<h1>In Projects</h1>
+{{pass}}
+{{count=count+1}}
+{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}
+<br/>
+{{pass}}
+{{pass}}
+</br>
+{{s=''}}
+{{count=0}}
+</br>
+</br>
+{{for some in form:}}
+{{s=some.description}}
+{{if s!=None:}}
+{{a=s.split()}}
+{{for i in range(len(a)):}}
+{{if str(a[i]).startswith(t):}}
+{{if count==0:}}
+<h1>In Description:</h1>
+{{pass}}
+{{count=count+1}}
+{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}
+Description:
+<h3>{{=some.description}}</h3>
+</br>
+</br>
+{{break}}
+{{pass}}
+{{pass}}
+{{pass}}
+{{pass}}
+</br>
+{{count=0}}
+{{for some in form1:}}
+{{if str(some.email).startswith(t):}}
+{{if count==0:}}
+<h1>In Users:</h1>
+{{pass}}
+{{count=count+1}}
+{{=LI(A(some.email, _href=URL("allprofile",args=some.id)))}} ({{=some.upload_count}} Uploads)
+{{pass}}
+{{pass}}
+{{count=0}}
+{{for some in form2:}}
+{{if str(some.file_name).startswith(t):}}
+{{if count==0:}}
+<h1>In Files:</h1>
+{{pass}}
+{{count=count+1}}
+{{=LI(A(some.file_name, _href=URL("viewfiles",args=some.project_id)))}}
+<br/>
+{{pass}}
+{{pass}}
+</br>
+{{s=''}}
+{{count=0}}
+{{for some in form2:}}
+{{s=some.file_description}}
+{{if s!=None:}}
+{{a=s.split()}}
+{{for i in range(len(a)):}}
+{{if str(a[i]).startswith(t):}}
+{{if count==0:}}
+<h1>In Files Description:</h1>
+{{pass}}
+{{count=count+1}}
+{{=LI(A(some.file_name, _href=URL("viewfiles",args=some.project_id)))}}
+Description:
+<h3>{{=some.file_description}}</h3>
+</br>
+</br>
+{{break}}
+{{pass}}
+{{pass}}
+{{pass}}
+{{pass}}

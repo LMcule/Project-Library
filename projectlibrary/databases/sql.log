@@ -1,0 +1,366 @@
+timestamp: 2013-03-24T16:12:21.077674
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2013-03-24T16:12:21.294844
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-03-24T16:12:21.440433
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-03-24T16:12:21.596185
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2013-03-24T16:12:21.729524
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-03-24T16:12:21.874263
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2013-03-24T17:43:20.133817
+CREATE TABLE project(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectName CHAR(512),
+    ProjectAdmin CHAR(512)
+);
+success!
+timestamp: 2013-03-24T18:14:29.661862
+CREATE TABLE register(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name CHAR(512),
+    Username CHAR(512),
+    Email CHAR(512),
+    Password CHAR(512),
+    About_Me TEXT,
+    Profile_Picture CHAR(512)
+);
+success!
+timestamp: 2013-03-24T18:24:12.630550
+ALTER TABLE project ADD project_admin CHAR(512);
+timestamp: 2013-03-24T18:24:12.805411
+ALTER TABLE project ADD project_name CHAR(512);
+timestamp: 2013-03-24T23:52:49.654732
+ALTER TABLE project ADD password CHAR(512);
+timestamp: 2013-03-25T23:37:33.635080
+ALTER TABLE auth_user ADD city CHAR(512);
+timestamp: 2013-03-25T23:37:33.828910
+ALTER TABLE auth_user ADD zip CHAR(512);
+timestamp: 2013-03-25T23:37:34.005033
+ALTER TABLE auth_user ADD phone CHAR(512);
+timestamp: 2013-03-25T23:37:34.163130
+ALTER TABLE auth_user ADD address CHAR(512);
+timestamp: 2013-03-25T23:54:22.486010
+ALTER TABLE auth_user ADD country CHAR(512);
+timestamp: 2013-03-27T15:48:06.346128
+CREATE TABLE wiki_page(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug CHAR(512),
+    title CHAR(512) UNIQUE,
+    body TEXT NOT NULL,
+    tags TEXT,
+    can_read TEXT,
+    can_edit TEXT,
+    changelog CHAR(512),
+    html TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-03-27T15:48:06.721887
+CREATE TABLE wiki_tag(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    wiki_page INTEGER REFERENCES wiki_page (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-03-27T15:48:06.934425
+CREATE TABLE wiki_media(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    wiki_page INTEGER REFERENCES wiki_page (id) ON DELETE CASCADE,
+    title CHAR(512),
+    filename CHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-03-27T16:20:23.959373
+ALTER TABLE auth_user ADD project_can_overwrite CHAR(512);
+timestamp: 2013-03-27T16:20:24.130117
+ALTER TABLE auth_user ADD uploaded_projects INTEGER;
+timestamp: 2013-03-27T16:46:59.139514
+ALTER TABLE project ADD category CHAR(512);
+timestamp: 2013-03-27T16:46:59.322877
+ALTER TABLE project ADD project_admin_email CHAR(512);
+timestamp: 2013-03-27T16:46:59.499486
+ALTER TABLE project ADD project_admin_year CHAR(512);
+timestamp: 2013-03-27T16:46:59.667105
+ALTER TABLE project ADD project_file CHAR(512);
+timestamp: 2013-03-27T16:46:59.811310
+ALTER TABLE project ADD type_of_project CHAR(512);
+timestamp: 2013-03-27T16:46:59.945087
+ALTER TABLE project ADD description TEXT;
+timestamp: 2013-03-30T19:17:49.705060
+ALTER TABLE project ADD rating INTEGER;
+timestamp: 2013-03-30T19:17:49.875381
+ALTER TABLE project ADD num_commentes INTEGER;
+timestamp: 2013-03-30T19:23:11.369503
+ALTER TABLE project ADD projectadmin_email CHAR(512);
+timestamp: 2013-03-30T19:23:11.548116
+ALTER TABLE project ADD num_comments INTEGER;
+timestamp: 2013-03-30T19:23:11.703439
+ALTER TABLE project ADD comments TEXT;
+timestamp: 2013-03-30T19:23:11.857587
+ALTER TABLE project ADD num_rating INTEGER;
+timestamp: 2013-03-31T12:46:22.975503
+CREATE TABLE comments(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment_c TEXT,
+    commenter_c CHAR(512),
+    project_c CHAR(512)
+);
+success!
+timestamp: 2013-03-31T13:12:34.136449
+ALTER TABLE comments ADD project_id INTEGER REFERENCES project (id) ON DELETE CASCADE;
+timestamp: 2013-04-01T01:28:54.698889
+ALTER TABLE project ADD num_downloads INTEGER;
+timestamp: 2013-04-01T03:19:09.589496
+ALTER TABLE auth_user ADD username CHAR(512) UNIQUE;
+timestamp: 2013-04-01T03:21:45.728222
+ALTER TABLE auth_user ADD username CHAR(512) UNIQUE;
+timestamp: 2013-04-01T03:23:33.030261
+ALTER TABLE auth_user ADD user_name_1 CHAR(512) UNIQUE;
+timestamp: 2013-04-01T15:57:52.682588
+CREATE TABLE uploaded_projects(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER REFERENCES project (id) ON DELETE CASCADE,
+    uploader INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-04-01T16:15:47.509984
+ALTER TABLE project ADD total_rating INTEGER;
+timestamp: 2013-04-01T16:35:08.235422
+ALTER TABLE project ADD avg_rating DOUBLE;
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+timestamp: 2013-04-02T09:24:50.547624
+ALTER TABLE auth_user ADD upload_count INTEGER;
+timestamp: 2013-04-02T18:16:22.525573
+CREATE TABLE allowed_users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    projectadmin_email CHAR(512),
+    other_email CHAR(512),
+    project_name CHAR(512)
+);
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+timestamp: 2013-04-06T15:28:46.277815
+ALTER TABLE auth_user ADD registration_date DATE;
+timestamp: 2013-04-06T15:28:46.495564
+ALTER TABLE project ADD date_added DATE;
+timestamp: 2013-04-06T15:30:36.655453
+ALTER TABLE project ADD time_added DATE;
+timestamp: 2013-04-13T11:12:27.250223
+ALTER TABLE project ADD project_pic CHAR(512);
+timestamp: 2013-04-13T11:29:22.313164
+ALTER TABLE auth_user ADD profile_pic CHAR(512);
+timestamp: 2013-04-13T20:44:37.069559
+CREATE TABLE files(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_file CHAR(512),
+    project_version INTEGER,
+    project_id INTEGER REFERENCES project (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-04-13T23:15:39.486570
+ALTER TABLE files ADD file_name CHAR(512);
+timestamp: 2013-04-14T01:57:25.392846
+ALTER TABLE files ADD file_description TEXT;
+timestamp: 2013-04-15T00:22:34.753141
+CREATE TABLE flak(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    project_id INTEGER,
+    all_flag CHAR(1),
+    comments_flag CHAR(1),
+    download_flag CHAR(1),
+    rating_flag CHAR(1)
+);
+success!
+timestamp: 2013-04-16T02:16:30.212471
+CREATE TABLE subscribe(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sub_user CHAR(512),
+    to_user INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    is_sub CHAR(1)
+);
+success!
+timestamp: 2013-04-16T02:55:02.001661
+ALTER TABLE subscribe ADD cur_user CHAR(512);
+timestamp: 2013-04-16T12:05:32.756809
+CREATE TABLE kolect(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cur_user CHAR(512),
+    project_name INTEGER REFERENCES project (id) ON DELETE CASCADE,
+    is_sub CHAR(1)
+);
+success!
+timestamp: 2013-04-16T12:43:49.845776
+ALTER TABLE kolect ADD project_id INTEGER REFERENCES project (id) ON DELETE CASCADE;
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM flak;
+DELETE FROM sqlite_sequence WHERE name='flak';
+success!
+DELETE FROM subscribe;
+DELETE FROM sqlite_sequence WHERE name='subscribe';
+success!
+DELETE FROM files;
+DELETE FROM sqlite_sequence WHERE name='files';
+success!
+DELETE FROM kolect;
+DELETE FROM sqlite_sequence WHERE name='kolect';
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM flak;
+DELETE FROM sqlite_sequence WHERE name='flak';
+success!
+DELETE FROM subscribe;
+DELETE FROM sqlite_sequence WHERE name='subscribe';
+success!
+DELETE FROM allowed_users;
+DELETE FROM sqlite_sequence WHERE name='allowed_users';
+success!
+DELETE FROM files;
+DELETE FROM sqlite_sequence WHERE name='files';
+success!
+DELETE FROM kolect;
+DELETE FROM sqlite_sequence WHERE name='kolect';
+success!
+DELETE FROM project;
+DELETE FROM sqlite_sequence WHERE name='project';
+success!
+DELETE FROM auth_user;
+DELETE FROM sqlite_sequence WHERE name='auth_user';
+success!
+DELETE FROM comments;
+DELETE FROM sqlite_sequence WHERE name='comments';
+success!
+DELETE FROM flak;
+DELETE FROM sqlite_sequence WHERE name='flak';
+success!
+DELETE FROM subscribe;
+DELETE FROM sqlite_sequence WHERE name='subscribe';
+success!
+DELETE FROM allowed_users;
+DELETE FROM sqlite_sequence WHERE name='allowed_users';
+success!
+DELETE FROM files;
+DELETE FROM sqlite_sequence WHERE name='files';
+success!
+DELETE FROM kolect;
+DELETE FROM sqlite_sequence WHERE name='kolect';
+success!

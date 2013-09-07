@@ -1,0 +1,35 @@
+{{extend "layout.html"}}
+<style type="text/css">
+h3,h2 { display: inline; }
+</style>
+<h2><b>Projects by name (A - Z)</b></h2>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<ul>
+{{for some in form:}}
+{{some.project_name=some.project_name.upper()}}
+<h2>{{=LI(A(some.project_name, _href=URL("project_page",args=some.id)))}}</h2>
+{{if some.project_pic!=None:}}
+<img heigth='150' width='150' align="left" src={{=URL('download',args=some.project_pic)}}>
+<br/>
+{{else:}}
+<img height='150'align="left" width='150' src={{=URL('static','images/defaultproject.jpeg')}}>
+<br/>
+<br/>
+{{pass}}
+<div style="float: center;">
+-----<h2>
+{{=some.description}}
+</h2>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+{{pass}}
+</ul>
+
+

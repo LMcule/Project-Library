@@ -1,0 +1,55 @@
+{{extend 'layout.html'}}
+{{flag=0}}
+<div style="float:right;">
+<br/>
+<br/>
+<form action={{=URL("clearnoti")}}>
+<input type='submit' value='Clear Notifications' ></input>
+</form>
+</div>
+{{sin=0}}
+{{for some in seen:}}
+{{if some.all_flag==1:}}
+{{sin=sin+1}}
+{{pass}}
+{{pass}}
+<div align="center">
+{{if sin==1:}}
+<h1>You have {{=sin}} Notification !</h1>
+{{pass}}
+{{if sin>1:}}
+<h1>You have {{=sin}} Notifications !</h1>
+{{pass}}
+</div>
+{{flag=0}}
+{{for some in seen:}}
+{{if some.all_flag==1:}}
+{{flag=1}}
+{{now=db(db.project.id==some.project_id).select()}}
+<br/>
+<div align="left">
+<h2>
+{{=A(now[0].project_name, _href=URL("project_page",args=some.project_id))}}
+</h2>
+</div>
+{{if now[0].project_pic!=None:}}
+<img heigth='150' width='150'align="left" src={{=URL('download',args=now[0].project_pic)}}>
+{{else:}}
+<img height='150' width='150' align="left" src={{=URL('static','images/defaultproject.jpeg')}}>
+{{pass}}
+<br/>
+<br/>
+{{if some.comments_flag==1:}}
+<blink><h3>New comments!!!</h3></blink>
+{{pass}}
+{{if some.rating_flag==1:}}
+<blink><h3>New rating!!!</h3></blink>
+{{pass}}
+{{if some.download_flag==1:}}
+<blink><h3>Congrats, More Downloads!!!</h3></blink>
+{{pass}}
+{{pass}}
+{{pass}}
+{{if flag==0:}}
+<blink><h2>No Notifications!!!</h2></blink>
+{{pass}}
